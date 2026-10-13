@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Please cite the AdaptiveQKE team project when referring to this research prototype or its recorded datasets."
+title: "AdaptiveQKE: Context-Aware Hybrid Key Exchange for TLS Channels"
+type: software
+authors:
+  - family-names: "Ajjour"
+    given-names: "Heba Abd El-Salam"
+  - family-names: "Abdalaal"
+    given-names: "Weaam Raed"
+  - family-names: "Nasrallah"
+    given-names: "Hala Ashraf"
+  - family-names: "Rajab"
+    given-names: "Farah Hussein"
+abstract: "Team graduation research prototype for deterministic context-aware hybrid group selection before TLS 1.3, with recorded experiments and a visual demonstration. See documentation for measurement limitations."
+keywords:
+  - "TLS 1.3"
+  - "ML-KEM"
+  - "post-quantum cryptography"

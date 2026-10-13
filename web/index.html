@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>AdaptiveQKE Visual Lab</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <aside style="padding:12px 24px;background:#fff3d6;color:#443416;font:14px/1.5 sans-serif;text-align:center">Research demo: replay uses archived measurements. Success flags and TLS timing have known limitations. Animation explains the workflow; it is not a live event trace.</aside>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="AdaptiveQKE home">
+      <span class="brand-mark" aria-hidden="true"><span>A</span><span>Q</span></span>
+      <span>
+        <strong>AdaptiveQKE</strong>
+        <small>Context-Aware Hybrid Key Exchange for TLS Channels</small>
+      </span>
+    </a>
+    <div class="header-meta">
+      <span class="status-dot"></span>
+      <span>UCAS Graduation Project · 2026</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="eyebrow">INTERACTIVE IMPLEMENTATION DEMO</p>
+        <h1>Watch the policy decide <span>before</span> TLS begins.</h1>
+        <p class="hero-text">Configure a device and network environment, run the AdaptiveQKE workflow, inspect the two-stage policy decision, then see the selected hybrid group and measured TLS 1.3 handshake costs.</p>
+        <div class="hero-pills" aria-label="Project evidence">
+          <span><b id="statRows">1,800</b> handshakes</span>
+          <span><b>100%</b> selection accuracy</span>
+          <span><b>3 × 3</b> device/network scenarios</span>
+          <span><b>3</b> performance metrics</span>
+        </div>
+      </div>
+      <aside class="hero-architecture" aria-label="AdaptiveQKE architecture preview">
+        <div class="arch-kicker">RUNTIME PATH</div>
+        <div class="arch-flow">
+          <div class="arch-node"><span>01</span><strong>Context Probe</strong><small>RTT · CPU · Memory</small></div>
+          <div class="arch-line"><i></i></div>
+          <div class="arch-node"><span>02</span><strong>Policy Engine</strong><small>Network → Device</small></div>
+          <div class="arch-line"><i></i></div>
+          <div class="arch-node accent"><span>03</span><strong>TLS 1.3</strong><small>Selected hybrid group</small></div>
+        </div>
+        <p>Pre-handshake selection layer · TLS flow remains unmodified</p>
+      </aside>
+    </section>
+
+    <section class="control-zone shell" aria-labelledby="configureTitle">
+      <div class="section-head">
+        <div>
+          <p class="section-index">01 · CONFIGURE ENVIRONMENT</p>
+          <h2 id="configureTitle">Choose the experimental condition</h2>
+          <p>The cards apply the same profile values used by the project. The Adaptive policy itself receives measured RTT plus CPU and memory limits.</p>
+        </div>
+        <div class="mode-switch" role="group" aria-label="Session mode">
+          <button class="mode-btn active" type="button" data-mode="replay">
+            <span>Dataset Replay</span><small>50-trial medians</small>
+          </button>
+          <button class="mode-btn" type="button" data-mode="live" id="liveModeBtn">
+            <span>Live Lab</span><small>Actual TLS handshake</small>
+          </button>
+        </div>
+      </div>
+
+      <div id="liveNotice" class="notice hidden" role="status"></div>
+
+      <div class="selector-grid">
+        <fieldset class="selector-panel">
+          <legend><span class="legend-dot"></span> Device profile</legend>
+          <div id="deviceCards" class="profile-cards"></div>
+        </fieldset>
+        <fieldset class="selector-panel">
+          <legend><span class="legend-dot net"></span> Network profile</legend>
+          <div id="networkCards" class="profile-cards"></div>
+        </fieldset>
+      </div>
+
+      <div class="launch-row">
+        <div class="selected-summary" id="selectedSummary">High-performance · Low-latency</div>
+        <button id="startBtn" class="primary-btn" type="button">
+          <span>START ADAPTIVE SESSION</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+        </button>
+        <button id="sandboxOpen" class="secondary-btn" type="button">POLICY SANDBOX</button>
+      </div>
+    </section>
+
+    <section class="workflow-zone shell" aria-labelledby="workflowTitle">
+      <div class="section-head compact">
+        <div>
+          <p class="section-index">02 · RUNTIME WORKFLOW</p>
+          <h2 id="workflowTitle">One session, six visible stages</h2>
+        </div>
+        <span id="sourceBadge" class="source-badge">READY</span>
+      </div>
+
+      <ol class="stepper" id="stepper">
+        <li class="step active"><span>1</span><div><b>Environment</b><small>tc-netem + cgroups</small></div></li>
+        <li class="step"><span>2</span><div><b>Context Probe</b><small>runtime inputs</small></div></li>
+        <li class="step"><span>3</span><div><b>Policy Engine</b><small>two-stage decision</small></div></li>
+        <li class="step"><span>4</span><div><b>Group</b><small>allow-list selection</small></div></li>
+        <li class="step"><span>5</span><div><b>TLS 1.3</b><small>standard handshake</small></div></li>
+        <li class="step"><span>6</span><div><b>Metrics</b><small>costs + comparison</small></div></li>
+      </ol>
+
+      <div class="workflow-grid">
+        <section class="stage-card environment-card" id="environmentStage">
+          <div class="card-head"><span class="stage-no">01</span><div><h3>Environment Enforcement</h3><p>The lab profile is applied before the adaptive decision.</p></div><span class="stage-state" id="environmentState">READY</span></div>
+          <div class="enforce-grid">
+            <div class="enforce-box">
+              <div class="micro-label">DEVICE · CGROUP V2</div>
+              <strong id="envDevice">High-performance</strong>
+              <div class="kv"><span>CPU share</span><b id="envCpu">Unrestricted</b></div>
+              <div class="kv"><span>Memory limit</span><b id="envMem">Unrestricted</b></div>
+            </div>
+            <div class="enforce-join"><span></span><b>+</b><span></span></div>
+            <div class="enforce-box">
+              <div class="micro-label">NETWORK · TC-NETEM</div>
+              <strong id="envNetwork">Low-latency</strong>
+              <div class="kv"><span>Delay / Rate</span><b id="envDelay">10 ms · 100 Mbit</b></div>
+              <div class="kv"><span>Packet loss</span><b id="envLoss">0%</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-card context-card" id="contextStage">
+          <div class="card-head"><span class="stage-no">02</span><div><h3>Context Probe</h3><p>Three raw signals enter the pre-handshake decision layer.</p></div><span class="stage-state" id="contextState">WAITING</span></div>
+          <div class="puzzle-wrap">
+            <div class="puzzle-piece rtt"><small>NETWORK</small><b id="ctxRtt">—</b><span>Measured RTT</span></div>
+            <div class="puzzle-center"><span>CONTEXT</span><strong>AdaptiveQKE</strong></div>
+            <div class="puzzle-piece cpu"><small>DEVICE</small><b id="ctxCpu">—</b><span>CPU share</span></div>
+            <div class="puzzle-piece memory"><small>DEVICE</small><b id="ctxMem">—</b><span>Memory limit</span></div>
+          </div>
+          <div class="probe-cost-row">
+            <div><span>Context probe cost</span><b id="probeCost">—</b></div>
+            <div><span>Classified device</span><b id="classifiedDevice">—</b></div>
+          </div>
+        </section>
+
+        <section class="stage-card policy-card wide" id="policyStage">
+          <div class="card-head"><span class="stage-no">03</span><div><h3>Policy Engine</h3><p>Stage 1 derives a network candidate. Stage 2 validates it against endpoint resources.</p></div><span class="stage-state" id="policyState">WAITING</span></div>
+          <div class="policy-columns">
+            <div class="policy-stage">
+              <div class="policy-title"><span>STAGE 1</span><strong>RTT-driven candidate</strong></div>
+              <div class="rtt-scale" aria-label="RTT policy scale">
+                <div class="scale-segment seg-strong"><span>1024</span><small>&lt; 50 ms</small></div>
+                <div class="scale-segment seg-balanced"><span>768</span><small>50–100 ms</small></div>
+                <div class="scale-segment seg-light"><span>512</span><small>&gt; 100 ms</small></div>
+                <div class="rtt-marker" id="rttMarker"><i></i><b id="rttMarkerLabel">RTT</b></div>
+              </div>
+              <div class="decision-line"><span id="stage1Rule">Waiting for measured RTT…</span><b id="candidateGroup">—</b></div>
+            </div>
+            <div class="policy-arrow" aria-hidden="true"><span></span><i>→</i><span></span></div>
+            <div class="policy-stage">
+              <div class="policy-title"><span>STAGE 2</span><strong>Device-aware validation</strong></div>
+              <div class="resource-scales">
+                <div class="resource-row"><span>CPU</span><div class="mini-scale"><i class="cut c1"></i><i class="cut c2"></i><em id="cpuMarker"></em></div><b id="policyCpu">—</b></div>
+                <div class="resource-row"><span>RAM</span><div class="mini-scale"><i class="cut m1"></i><i class="cut m2"></i><em id="memMarker"></em></div><b id="policyMem">—</b></div>
+              </div>
+              <div class="decision-line"><span id="stage2Rule">Waiting for device classification…</span><b id="finalGroupMini">—</b></div>
+            </div>
+          </div>
+          <div class="policy-overhead"><span>Policy evaluation cost</span><strong id="policyCost">—</strong><small>measured separately from context acquisition</small></div>
+        </section>
+
+        <section class="stage-card group-card wide" id="groupStage">
+          <div class="card-head"><span class="stage-no">04</span><div><h3>Allow-list Selection</h3><p>The policy selects one of the three evaluated ML-KEM + ECDH hybrid groups.</p></div><span class="stage-state" id="groupState">WAITING</span></div>
+          <div id="groupCards" class="group-options"></div>
+          <div class="stage0-note"><span>STAGE 0</span><b>Security floor / ceiling</b><small>Conceptual in the thesis — not implemented or exercised in the experiment.</small></div>
+        </section>
+
+        <section class="stage-card tls-card wide" id="tlsStage">
+          <div class="card-head"><span class="stage-no">05</span><div><h3>Standard TLS 1.3 Handshake</h3><p>Adaptive selection is finished. The chosen group is configured, then TLS proceeds normally.</p></div><span class="stage-state" id="tlsState">WAITING</span></div>
+          <div class="boundary"><span>PRE-HANDSHAKE SELECTION COMPLETE</span><i></i><span>TLS 1.3 BEGINS</span></div>
+          <div class="tls-lanes">
+            <div class="endpoint client"><span class="endpoint-icon">C</span><b>TLS Client</b><small>AdaptiveQKE side</small></div>
+            <div class="messages">
+              <div class="message to-server"><span>ClientHello</span><small id="tlsClientGroup">selected group</small><i></i></div>
+              <div class="message to-client"><span>ServerHello + KeyShare</span><small>hybrid response</small><i></i></div>
+              <div class="message to-server"><span>Finished</span><small>client authentication state</small><i></i></div>
+              <div class="message to-client"><span>Finished</span><small>secure channel ready</small><i></i></div>
+            </div>
+            <div class="endpoint server"><span class="endpoint-icon">S</span><b>TLS 1.3 Server</b><small>unmodified flow</small></div>
+          </div>
+          <div class="secure-channel" id="secureChannel"><span></span><b>SECURE CHANNEL</b><small id="secureStatus">Awaiting session</small></div>
+        </section>
+
+        <section class="stage-card metrics-card wide" id="metricsStage">
+          <div class="card-head"><span class="stage-no">06</span><div><h3>Measured Handshake Costs</h3><p>Primary evaluation metrics plus wire-level cross-check and first-connection overhead.</p></div><span class="stage-state" id="metricsState">WAITING</span></div>
+          <div class="metric-grid">
+            <div class="metric primary"><span>Handshake Size</span><strong id="metricSize">—</strong><small>bytes exchanged</small></div>
+            <div class="metric primary"><span>CPU Time</span><strong id="metricCpu">—</strong><small>client self + child</small></div>
+            <div class="metric primary"><span>Handshake Latency</span><strong id="metricHandshake">—</strong><small>OpenSSL state trace</small></div>
+            <div class="metric"><span>Wire Latency</span><strong id="metricWire">—</strong><small>byte-counting proxy</small></div>
+          </div>
+
+          <div class="cost-decomposition">
+            <div class="cost-title"><span>FIRST CONNECTION · THESIS CONVENTION</span><strong id="firstCost">—</strong></div>
+            <div class="cost-bar">
+              <div class="cost-part probe" id="costProbeBar"><span>Probe</span><b id="costProbeLabel">—</b></div>
+              <div class="cost-part wire" id="costWireBar"><span>Wire handshake</span><b id="costWireLabel">—</b></div>
+            </div>
+            <p><b id="tinyPolicyCost">Policy: —</b> is reported separately and is not folded into the Chapter 4 first-connection total.</p>
+          </div>
+
+          <div class="compare-head">
+            <div><span>RECORDED BASELINES</span><h4>Same device + network, 50-trial medians</h4></div>
+            <div class="metric-tabs" role="group" aria-label="Comparison metric">
+              <button type="button" class="metric-tab active" data-metric="wire_latency_ms">Wire latency</button>
+              <button type="button" class="metric-tab" data-metric="cpu_time_ms">CPU time</button>
+              <button type="button" class="metric-tab" data-metric="handshake_size_bytes">Handshake size</button>
+            </div>
+          </div>
+          <div id="comparisonChart" class="comparison-chart"><p class="empty-state">Run a session to load the matching recorded baselines.</p></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="interpretation shell">
+      <div class="interpret-card"><span>WHY TWO LATENCIES?</span><h3>Wire latency stays outside the constrained client.</h3><p>The byte-counting proxy measures from the first client→server bytes to wire quiescence, reducing observer throttling. Real client scheduling delays still affect traffic. See the documented measurement limitations.</p></div>
+      <div class="interpret-card"><span>WHAT DOES ADAPTIVE OPTIMIZE?</span><h3>A policy balance, not minimum latency alone.</h3><p>Under favorable conditions the policy may retain the strongest evaluated group even if lighter static groups have lower latency.</p></div>
+      <div class="interpret-card"><span>FIRST CONNECTION</span><h3>Probe cost is visible, not hidden.</h3><p>The live context acquisition is network-dependent. The policy computation is tiny by comparison, which is why the demo reports them separately.</p></div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <div><strong>AdaptiveQKE Visual Lab</strong><span>Presentation interface over the project implementation and recorded dataset.</span></div>
+    <div>Heba Ajjour · Weaam Abdalaal · Hala Nasrallah · Farah Rajab</div>
+  </footer>
+
+  <dialog id="sandboxDialog" class="sandbox-dialog">
+    <form method="dialog" class="dialog-shell" id="sandboxForm">
+      <div class="dialog-head">
+        <div><p class="section-index">POLICY-ONLY WHAT-IF TOOL</p><h2>Policy Sandbox</h2><p>Manual inputs exercise only the same two-stage policy logic. No environment enforcement and no TLS handshake are performed here.</p></div>
+        <button type="button" class="close-btn" id="sandboxClose" aria-label="Close">×</button>
+      </div>
+      <div class="sandbox-grid">
+        <label class="sandbox-control"><span>RTT</span><output id="sandboxRttOut">70 ms</output><input id="sandboxRtt" type="range" min="0" max="180" value="70" step="1"></label>
+        <label class="sandbox-control"><span>CPU share</span><output id="sandboxCpuOut">25%</output><input id="sandboxCpu" type="range" min="1" max="100" value="25" step="1"><span class="checkline"><input id="sandboxCpuUnlimited" type="checkbox"> Treat as unrestricted</span></label>
+        <label class="sandbox-control"><span>Memory limit</span><output id="sandboxMemOut">128 MB</output><input id="sandboxMem" type="range" min="16" max="512" value="128" step="16"><span class="checkline"><input id="sandboxMemUnlimited" type="checkbox"> Treat as unrestricted</span></label>
+      </div>
+      <button type="submit" class="primary-btn sandbox-run">EVALUATE POLICY</button>
+      <div id="sandboxResult" class="sandbox-result" aria-live="polite"><span>Adjust the inputs, then evaluate.</span></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
